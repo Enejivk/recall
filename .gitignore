@@ -1,0 +1,14 @@
+# Node.js dependencies
+node_modules/
+
+# Compiled binary addons (node-gyp)
+build/
+
+# dotenv environment variables file
+.env
+.env.local
+.env.*.local
+
+# Dist folder
+dist/
+out/
