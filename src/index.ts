@@ -1,15 +1,17 @@
 import express from "express";
+import { createUserTable } from "./createTables";
 
-const app = express();
 const PORT = 5000;
+const app = express();
 
-app.get("/", (req, res) => {
-    console.log("how are you doing")
-  res.send("Hello ES Modules + TypeScript!");
+function createTableIfNotExit() {
+  createUserTable();
+}
+
+app.get("/health", (req, res) => {
+  return res.json({ msg: "is working" });
 });
 
-
-
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+app.listen(5000, () => {
+  console.log("server started at ", PORT);
 });
