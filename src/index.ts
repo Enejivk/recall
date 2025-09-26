@@ -1,17 +1,34 @@
 import express from "express";
 import { createUserTable } from "./createTables";
+import authRoutes from "./auth";
+import type { Request, Response, NextFunction } from "express";
 
-const PORT = 5000;
+const PORT = 3000;
 const app = express();
+
+// Middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+
+function logger(req: Request, res: Response, next: NextFunction) {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+}
+
+app.use(logger);
 
 function createTableIfNotExit() {
   createUserTable();
 }
 
-app.get("/health", (req, res) => {
+createTableIfNotExit()
+// Routes
+app.get("/", (req, res) => {
   return res.json({ msg: "is working" });
 });
 
-app.listen(5000, () => {
+app.use("/auth", authRoutes);
+
+app.listen(PORT, () => {
   console.log("server started at ", PORT);
 });
