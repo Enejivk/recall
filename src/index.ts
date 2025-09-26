@@ -1,15 +1,39 @@
 import express from "express";
+import { createUserTable } from "./createTables";
+import authRoutes from "./auth";
+import type { Request, Response, NextFunction } from "express";
+import cookieParser from "cookie-parser";
+import { authMiddleware } from "./middlewares/authMiddleware";
 
+const PORT = 3000;
 const app = express();
-const PORT = 5000;
 
+// Middleware
+app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser());
+app.use(authMiddleware);
+
+app.use(express.urlencoded({ extended: true }));
+
+function logger(req: Request, res: Response, next: NextFunction) {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+}
+
+app.use(logger);
+
+function createTableIfNotExit() {
+  createUserTable();
+}
+
+createTableIfNotExit();
+// Routes
 app.get("/", (req, res) => {
-    console.log("how are you doing")
-  res.send("Hello ES Modules + TypeScript!");
+  return res.json({ msg: "is working" });
 });
 
-
+app.use("/auth", authRoutes);
 
 app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+  console.log("server started at ", PORT);
 });
