@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
-// Define the user schema
 type TokenData = { id: string };
 type DBUser = {
   email: string;
