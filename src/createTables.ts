@@ -9,8 +9,8 @@ export async function createTables() {
     CREATE TABLE IF NOT EXISTS users (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       email VARCHAR(100) UNIQUE NOT NULL,
-      passwordHash VARCHAR(300) NOT NULL,
-      createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      password_hash VARCHAR(300) NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
 
     -- Questions table
@@ -24,25 +24,24 @@ export async function createTables() {
     );
 
     -- Answers table
-    CREATE TABLE IF NOT EXISTS answers (
+    CREATE TABLE answers (
       id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      text TEXT NOT NULL,
+      feedback TEXT NOT NULL,
+      user_answer TEXT NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       question_id UUID REFERENCES questions(id) ON DELETE CASCADE,
       user_id UUID REFERENCES users(id) ON DELETE CASCADE
     );
 
-    -- Feedback table
-    CREATE TABLE IF NOT EXISTS feedback (
-      id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      text TEXT NOT NULL,
-      answer_id UUID REFERENCES answers(id) ON DELETE CASCADE,
-      user_id UUID REFERENCES users(id) ON DELETE CASCADE
-    );
+    -- Indexes for performance
+    CREATE INDEX IF NOT EXISTS idx_questions_user_id ON questions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_answers_question_id ON answers(question_id);
+    CREATE INDEX IF NOT EXISTS idx_answers_user_id ON answers(user_id);
   `;
 
   try {
     await pool.query(createAllTables);
-    console.log("✅ All tables created successfully in one go");
+    console.log("✅ All tables created successfully (safe mode)");
   } catch (error) {
     console.error("❌ Error creating tables:", error);
   } finally {
@@ -51,5 +50,3 @@ export async function createTables() {
 }
 
 export default createTables;
-
-

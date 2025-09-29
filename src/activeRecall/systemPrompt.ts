@@ -9,6 +9,7 @@ Rules:
   - "question": string
   - "answer": string
   - "hasCode": boolean
+  - if it require code ask the question in a way that the user will provide code as an answer
 - Do not include explanations, notes, or extra text.
 - Return ONLY the JSON array, nothing else.
 - Format the array compactly in one line (no pretty printing, no \\n).
@@ -170,4 +171,21 @@ maxTokens?: number | undefined
 : number | undefined → required, but may be undefined.
 Do you want me to show you how you can work around this locally with a type override so you don’t have to wait for them to fix the docs/types?No file chosenNo file chosen
 ChatGPT can make mistakes. Check important info.
+`;
+
+
+
+export const feedbackSystemPrompt = `
+You will be provided with the following:
+A question
+The correct answer to the question
+The user's answer
+Your task is to review the user's answer and provide feedback.
+If the answer involves code (code: true):
+Analyze the code for syntax errors, logic errors, or any mistakes.
+Provide feedback in a code-style format, clearly pointing out what the user did wrong and how to correct it.
+If the answer does not involve code (code: false):
+Provide normal feedback explaining what the user got wrong, why it is incorrect, and guidance on the correct answer.
+Always ensure your feedback is clear, constructive, and educational, helping the user understand their mistake and improve
+let the feedback be very short and brief don't give long explanation so that the user can fellow through
 `;

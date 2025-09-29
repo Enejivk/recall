@@ -13,8 +13,11 @@ const app = express();
 app.use(logger);
 app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
-// app.use(authMiddleware);
+
+app.use("/auth", authRoutes);
+app.use(authMiddleware);
 app.use("/questions", questionRoute);
+
 
 app.use(express.urlencoded({ extended: true }));
 function logger(req: Request, res: Response, next: NextFunction) {
@@ -26,13 +29,15 @@ async function createTableIfNotExit() {
   createUserTable();
 }
 
-createTableIfNotExit();
+// createTableIfNotExit();
+
+
 // Routes
 app.get("/", (req, res) => {
   return res.json({ msg: "is working" });
 });
 
-app.use("/auth", authRoutes);
+
 
 app.listen(PORT, () => {
   console.log("server started at ", PORT);
