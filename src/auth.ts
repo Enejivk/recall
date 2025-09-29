@@ -7,12 +7,11 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 
 dotenv.config();
-// Define the user schema
 type TokenData = { id: string };
 type DBUser = {
   email: string;
   id: string;
-  passwordhash: string;
+  password_hash: string;
 };
 
 type UserPayload = {
@@ -45,7 +44,7 @@ function setTokenCookies(
 
 async function getUser(email: string): Promise<DBUser> {
   const metadata = await pool.query(
-    `SELECT email, id, passwordHash FROM users WHERE email = $1`,
+    `SELECT email, id, password_hash FROM users WHERE email = $1`,
     [email]
   );
   return metadata.rows[0];
@@ -72,7 +71,6 @@ route.post("/register", async (req: Request, res: Response) => {
   try {
     // Validating data
     registerSchema.parse(body);
-
     // check if user not found in database
     const userExist = await getUser(body.email);
     if (userExist) {
@@ -81,9 +79,10 @@ route.post("/register", async (req: Request, res: Response) => {
         .json({ message: `User with email ${body.email} already exist` });
     }
 
+    console.log("Request went to the body well", body);
     const passwordHash = await bcrypt.hash(body.password, 10);
     const user = await pool.query(
-      `INSERT INTO users(email, passwordHash) VALUES($1, $2) RETURNING id`,
+      `INSERT INTO users(email, password_hash) VALUES($1, $2) RETURNING id`,
       [body.email, passwordHash]
     );
 
@@ -112,7 +111,7 @@ route.post("/login", async (req: Request, res: Response) => {
   }
 
   // check if the password is correct
-  const isPasswordMatch = await bcrypt.compare(password, user.passwordhash);
+  const isPasswordMatch = await bcrypt.compare(password, user.password_hash);
   if (!isPasswordMatch) {
     return res.status(401).json({ message: "Invalid username or password" });
   }
